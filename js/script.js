@@ -24,3 +24,10 @@ const movieDB = {
     ]
 };
 
+const promoAdv=document.getElementsByTagName('img');
+console.log(promoAdv);
+promoAdv.forEach(item =>{
+    item.remove();
+});
+// promoAdv.remove();
+
