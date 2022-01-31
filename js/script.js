@@ -17,39 +17,74 @@ P.S. Здесь есть несколько вариантов решения з
 
 'use strict';
 
-const movieDB = {
-    movies: [
-        "Логан",
-        "Лига справедливости",
-        "Ла-ла лэнд",
-        "Одержимость",
-        "Скотт Пилигрим против..."
-    ]
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const movieDB = {
+        movies: [
+            "Логан",
+            "Лига справедливости",
+            "Ла-ла лэнд",
+            "Одержимость",
+            "Скотт Пилигрим против..."
+        ]
+    };
 
-const adv = document.querySelectorAll('.promo__adv img'),
-    poster = document.querySelector('.promo__bg'),
-    genre = poster.querySelector('.promo__genre'),
-    movieList = document.querySelector('.promo__interactive-list');
+    const adv = document.querySelectorAll('.promo__adv img'),
+        poster = document.querySelector('.promo__bg'),
+        genre = poster.querySelector('.promo__genre'),
+        movieList = document.querySelector('.promo__interactive-list'),
+        addForm = document.querySelector('.add'),
+        addInput = addForm.querySelector('.adding__input'),
+        checkbox = addForm.querySelector('[type="checkbox"]');
 
 
-console.log(movieList);
 
-adv.forEach(item => {
-    item.remove();
-});
+    // console.log(checkbox);
 
-genre.textContent = 'драма';
+    addForm = addEventListener('submit', (event) => {
+        event.preventDefault();
 
-poster.style.backgroundImage = 'url("img/bg.jpg")';
-console.log(movieList.innerHTML);
+        const newFilm = addInput.value;
+        const favorit = checkbox.checked;
 
-movieList.innerHTML = '';
-const sort = movieDB.movies.sort();
+        movieDB.movies.push(newFilm);
+        sortArr(movieDB.movies);
+        createMovieList(movieDB.movies, movieList);
+    });
+    const deleteAdv = (arr) => {
+        arr.forEach(item => {
+            item.remove();
+        });
+    };
 
-sort.forEach((film, i) => {
-    movieList.innerHTML += ` 
-    <li class="promo__interactive-item">${i + 1} ${film}   
-        <div class="delete"></div>
-    </li>`;
+
+
+    const makeChanges = () => {
+        genre.textContent = 'драма';
+
+        poster.style.backgroundImage = 'url("img/bg.jpg")';
+    };
+    
+    //console.log(movieList.innerHTML);
+    const sortArr= (arr) =>{
+        arr.sort();
+    };
+   sortArr(movieDB.movies);
+
+    function createMovieList(films, parent) {
+        parent.innerHTML = '';
+
+
+        films.forEach((film, i) => {
+            parent.innerHTML += ` 
+            <li class="promo__interactive-item">${i + 1} ${film}   
+                <div class="delete"></div>
+            </li>`;
+        });
+    }
+
+    deleteAdv(adv);
+    makeChanges();
+    sortArr(movieDB.movies);
+    createMovieList(movieDB.movies, movieList);
+
 });
