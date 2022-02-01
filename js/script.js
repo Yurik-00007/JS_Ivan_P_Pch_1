@@ -28,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const adv = document.querySelectorAll('.promo__adv img'),
+    let adv = document.querySelectorAll('.promo__adv img'),
         poster = document.querySelector('.promo__bg'),
         genre = poster.querySelector('.promo__genre'),
         movieList = document.querySelector('.promo__interactive-list'),
-        addForm = document.querySelector('.add'),
+     addForm = document.querySelector('.add'),
         addInput = addForm.querySelector('.adding__input'),
         checkbox = addForm.querySelector('[type="checkbox"]');
 
@@ -43,12 +43,31 @@ document.addEventListener('DOMContentLoaded', () => {
     addForm = addEventListener('submit', (event) => {
         event.preventDefault();
 
-        const newFilm = addInput.value;
+        let newFilm = addInput.value;
         const favorit = checkbox.checked;
 
-        movieDB.movies.push(newFilm);
-        sortArr(movieDB.movies);
+        
+
+        if(newFilm){
+
+            if(newFilm.length >21){
+                newFilm = `${newFilm.substr(0,22)}...`;
+            }
+
+            if (checkbox.checked){
+                console.log('Добавляем любимый фильм');
+            }
+
+            movieDB.movies.push(newFilm);
+            movieDB.movies.sort();
+
         createMovieList(movieDB.movies, movieList);
+        }
+
+        
+        
+        // console.log(event.target);
+        event.target.reset();
     });
     const deleteAdv = (arr) => {
         arr.forEach(item => {
@@ -63,16 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         poster.style.backgroundImage = 'url("img/bg.jpg")';
     };
-    
+
     //console.log(movieList.innerHTML);
-    const sortArr= (arr) =>{
+    const sortArr = (arr) => {
         arr.sort();
     };
-   sortArr(movieDB.movies);
 
     function createMovieList(films, parent) {
         parent.innerHTML = '';
-
+        sortArr(films);
 
         films.forEach((film, i) => {
             parent.innerHTML += ` 
@@ -80,11 +98,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="delete"></div>
             </li>`;
         });
+
+        document.querySelectorAll('.delete').forEach((btn,i) =>{
+            btn.addEventListener('click',() =>{
+                btn.parentElement.remove();
+                movieDB.movies.splice(i,1);
+                createMovieList(films, parent);
+            });
+        });
     }
 
     deleteAdv(adv);
     makeChanges();
-    sortArr(movieDB.movies);
+    
     createMovieList(movieDB.movies, movieList);
+
+
 
 });
