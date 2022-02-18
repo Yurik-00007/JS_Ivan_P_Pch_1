@@ -1,4 +1,6 @@
-window.addEventListener('DOMContentLoaded', (e) => {
+'use strict';
+
+window.addEventListener('DOMContentLoaded', () => {
 
     //Tabs
 
@@ -76,10 +78,10 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
     function setClock(selector, endtime) {
         const timer = document.querySelector(selector),
-            days = document.querySelector('#days'),
-            hours = document.querySelector('#hours'),
-            minutes = document.querySelector('#minutes'),
-            seconds = document.querySelector('#seconds'),
+            days = timer.querySelector('#days'),
+            hours = timer.querySelector('#hours'),
+            minutes = timer.querySelector('#minutes'),
+            seconds = timer.querySelector('#seconds'),
 
             timeInterval = setInterval(updateClock, 1000);
 
@@ -87,11 +89,23 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
         function updateClock() {
             const t = getTimeRemaining(endtime);
+            if (t.total <= 0) {
+                days.innerHTML = 0;
+                hours.innerHTML = 0;
+                minutes.innerHTML = 0;
+                seconds.innerHTML = 0;
+                clearInterval(timeInterval);
+     
+            }else{
 
             days.innerHTML = getZiro(t.days);
             hours.innerHTML = getZiro(t.hours);
             minutes.innerHTML = getZiro(t.minutes);
             seconds.innerHTML = getZiro(t.seconds);
+            console.log(t.total);
+        }
+
+            
 
         }
 
@@ -162,7 +176,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
             this.title = title;
             this.descr = descr;
             this.price = price;
-            this.classes=classes; //будет массив и работать нужно как с массивом
+            this.classes = classes; //будет массив и работать нужно как с массивом
             this.parent = document.querySelector(parentSelector); //указываем родителя, куда будут помещаться эти карточки
             this.transfer = 27; //фиксированый курс 
             this.changeToUAH();
@@ -176,16 +190,16 @@ window.addEventListener('DOMContentLoaded', (e) => {
 
         render() {
             const element = document.createElement('div');
-            if(this.classes.length === 0){
+            if (this.classes.length === 0) {
                 this.element = 'menu__item';
                 element.classList.add(this.element);
-            }else{
+            } else {
                 this.classes.forEach(className => element.classList.add(className));
 
             }
 
             element.innerHTML = //делаем обект универсальным, вставляе атрибуты
-            `
+                `
                 <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
                 <div class="menu__item-descr">${this.descr}</div>
@@ -208,7 +222,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
         9,
         '.menu .container',
         'menu__item',
-         'big'
+        'big'
     );
     div1.render();
 
@@ -218,7 +232,7 @@ window.addEventListener('DOMContentLoaded', (e) => {
         'Меню “Премиум”',
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
         14,
-        '.menu .container',
+        '.menu .container'
     );
     div2.render();
 
@@ -228,9 +242,64 @@ window.addEventListener('DOMContentLoaded', (e) => {
         'Меню "Постное"',
         'Меню "Постное" - это тщательный подбор ингредиентов: полное отсутствие           продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное           количество белков за счет тофу и импортных вегетарианских стейков.',
         21,
-        '.menu .container',
-       
+        '.menu .container'
+
     );
     div3.render();
 
+    //Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading:'Загрузка',
+        seccess : 'Спасибо! Скоро мы свяжемся',
+        failure : 'Что-то пошло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form){
+        form.addEventListener('submit', (e) =>{
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+            const formData =  new FormData(form);
+
+            const object = {};
+            formData.forEach(function(value,key){
+                object[key]=value;
+            });
+
+            const json = JSON.stringify(object);
+
+
+            request.send(json);
+            request.addEventListener('load',() => {
+                if(request.status ===200){
+                    console.log(request.response);  
+                    statusMessage.textContent = message.seccess;
+                    form.reset();
+                    setTimeout(()=>{
+                        statusMessage.remove();
+                    },2000);
+                }else{
+                    statusMessage.textContent = message.failure;
+
+                }
+            });
+
+
+        });
+    }
 });
