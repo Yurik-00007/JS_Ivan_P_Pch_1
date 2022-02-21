@@ -48,7 +48,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //Timer
 
-    const deadline = '2022-02-17';
+    const deadline = '2022-02-27';
     // const z = new Date(deadline);
     // console.log(typeof(z));
 
@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', () => {
             hours.innerHTML = getZiro(t.hours);
             minutes.innerHTML = getZiro(t.minutes);
             seconds.innerHTML = getZiro(t.seconds);
-            console.log(t.total);
+            // console.log(t.total);
         }
 
             
@@ -116,8 +116,8 @@ window.addEventListener('DOMContentLoaded', () => {
     //Model
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-        modal = document.querySelector('.modal'),
-        modalCloseBtn = document.querySelector('[data-close]');
+        modal = document.querySelector('.modal');
+        // modalCloseBtn = document.querySelector('[data-close]');
 
     // console.log(modalTrigger);
 
@@ -129,7 +129,9 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     function openModal() {
-        modal.classList.toggle('show');
+        // modal.classList.toggle('show');
+        modal.classList.add('show');
+        modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
         clearInterval(modelTimerId);
     }
@@ -141,10 +143,10 @@ window.addEventListener('DOMContentLoaded', () => {
         modal.classList.toggle('show');
     }
 
-    modalCloseBtn.addEventListener('click', closeModal);
+    // modalCloseBtn.addEventListener('click', closeModal);
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close')=='') {
             closeModal();
         }
     });
@@ -155,7 +157,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const modelTimerId = setInterval(openModal, 15000);
+    const modelTimerId = setTimeout(openModal, 50000);
 
     function showModalByScroll() {
         if ((window.pageYOffset + document.documentElement.clientHeight + 1) >= document.documentElement.scrollHeight) {
@@ -250,10 +252,11 @@ window.addEventListener('DOMContentLoaded', () => {
     //Forms
 
     const forms = document.querySelectorAll('form');
+    console.log(forms);
 
     const message = {
-        loading:'Загрузка',
-        seccess : 'Спасибо! Скоро мы свяжемся',
+        loading:'img/form/spinner.svg',
+        success : 'Спасибо! Скоро мы свяжемся',
         failure : 'Что-то пошло не так...'
     };
 
@@ -265,10 +268,14 @@ window.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) =>{
             e.preventDefault();
 
-            const statusMessage = document.createElement('div');
-            statusMessage.classList.add('status');
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage);
+            const statusMessage = document.createElement('img');
+            statusMessage.src=message.loading;
+            statusMessage.style.cssText=`
+                display: block;
+                margin: 0 auto;
+            `;
+            console.log(form.insertAdjacentElement('afterend',statusMessage));
+            form.insertAdjacentElement('afterend',statusMessage);
 
 
             const request = new XMLHttpRequest();
@@ -288,13 +295,11 @@ window.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load',() => {
                 if(request.status ===200){
                     console.log(request.response);  
-                    statusMessage.textContent = message.seccess;
+                    showThanksModal(message.success);
                     form.reset();
-                    setTimeout(()=>{
-                        statusMessage.remove();
-                    },2000);
+                    statusMessage.remove();                    
                 }else{
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
 
                 }
             });
@@ -302,4 +307,32 @@ window.addEventListener('DOMContentLoaded', () => {
 
         });
     }
+
+    function showThanksModal(message){
+        const prevModalDialog = document.querySelector('.modal__dialog');
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML=`
+        <div class="modal__content">
+       
+            <div data-close class="modal__close">&times;</div>
+            <div class="modal__title">${message}</div>
+            
+            </div>`;
+        
+            document.querySelector('.modal').append(thanksModal);
+            setTimeout(() =>{
+                thanksModal.remove();
+                prevModalDialog.classList.add('show');
+                prevModalDialog.classList.remove('hide');
+                closeModal();
+            },4000); 
+
+
+    }
+
+
 });
