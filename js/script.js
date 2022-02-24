@@ -359,4 +359,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //     // const request1= new XMLHttpRequest();
     //     // console.log(request1.open('GET','https://jsonplaceholder.typicode.com/todos/1'));
+
+    fetch('http://localhost:3000/menu')
+        .then(data => data.json())
+        .then(res => console.log(res)); 
+
 });
