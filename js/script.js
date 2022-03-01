@@ -217,9 +217,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    const getResource = async(url) =>{
+    const getResource = async (url) => {
         const res = await fetch(url);
-        if(!res.ok){
+        if (!res.ok) {
             throw new Error(`Could not fetch ${url}, status: ${res.status}`);
         }
 
@@ -234,12 +234,18 @@ window.addEventListener('DOMContentLoaded', () => {
     // });
 
     axios.get('http://localhost:3000/menu')
-    .then (data => {
-        // console.log(data);
-        data.data.forEach(({img, altimg, title, descr, price}) =>{
-                    new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+        .then(data => {
+            // console.log(data);
+            data.data.forEach(({
+                img,
+                altimg,
+                title,
+                descr,
+                price
+            }) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
         });
-    });
 
     // const div1 = new MenuCard(
     //     "img/tabs/vegy.jpg",
@@ -314,13 +320,13 @@ window.addEventListener('DOMContentLoaded', () => {
         bindPostData(item);
     });
 
-    const postData = async(url,data) =>{
-        const res = await fetch(url,{
-            method : 'POST',
-            headers : {
-                'Content-type':'application/json'
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
             },
-            body : data
+            body: data
         });
         return await res.json();
     };
@@ -341,7 +347,7 @@ window.addEventListener('DOMContentLoaded', () => {
             // const request = new XMLHttpRequest();
             // request.open('POST', 'server.php');
 
-            
+
             const formData = new FormData(form);
 
             // const object = {};
@@ -349,26 +355,29 @@ window.addEventListener('DOMContentLoaded', () => {
             //     object[key] = value;
             // });
 
-             const json = JSON.stringify(Object.fromEntries(formData.entries()));
-             console.log(json);
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+            console.log(json);
 
-             const obj ={a:23, b:50};
-             const w=Object.entries(obj);
-             console.log(Object.fromEntries(w));
+            const obj = {
+                a: 23,
+                b: 50
+            };
+            const w = Object.entries(obj);
+            console.log(Object.fromEntries(w));
 
 
 
-      
+
             postData('http://localhost:3000/requests', json)
-            .then(data =>{
-                 console.log(data);
-                showThanksModal(message.success);
-                statusMessage.remove();
-            }).catch(()=>{
-                showThanksModal(message.failure);
-            }).finally(()=>{
-                form.reset();
-            });
+                .then(data => {
+                    console.log(data);
+                    showThanksModal(message.success);
+                    statusMessage.remove();
+                }).catch(() => {
+                    showThanksModal(message.failure);
+                }).finally(() => {
+                    form.reset();
+                });
 
             // request.addEventListener('load', () => {
             //     if (request.status === 200) {
@@ -423,8 +432,59 @@ window.addEventListener('DOMContentLoaded', () => {
     //     // const request1= new XMLHttpRequest();
     //     // console.log(request1.open('GET','https://jsonplaceholder.typicode.com/todos/1'));
 
-    fetch('http://localhost:3000/menu')
-        .then(data => data.json())
-         .then(res => console.log(res)); 
+    // fetch('http://localhost:3000/menu')
+    //     .then(data => data.json());
+    //     //  .then(res => console.log(res)); 
 
+    //Slider
+
+    const sliders = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next'),
+        total =document.querySelector('#total'),
+        current=document.querySelector('#current');
+    let slideIndex = 1;
+
+    showSlides(slideIndex);
+
+    if(sliders.length<10){
+        total.textContent=`0${sliders.length}`;
+    }else{
+        total.textContent=`${sliders.length}`;
+    }
+    
+
+    function showSlides(n) {
+        if (n > sliders.length) {
+            slideIndex = 1;
+        }
+        if (n < 1) {
+            slideIndex = sliders.length;
+        }
+
+        sliders.forEach(item => item.style.display = 'none');
+
+        sliders[slideIndex-1].style.display = 'block';
+
+        if(slideIndex<10){
+            current.textContent=`0${slideIndex}`;
+        }else{
+            current.textContent=`${slideIndex}`;
+        }
+
+
+    }
+
+    function plusSlides(n){
+        showSlides(slideIndex += n);
+        
+    }
+
+    prev.addEventListener('click', ()=>{
+        plusSlides(-1);
+    });
+    
+    next.addEventListener('click', ()=>{
+        plusSlides(1);
+    });
 });
